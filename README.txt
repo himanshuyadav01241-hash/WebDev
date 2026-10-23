@@ -1,36 +1,26 @@
-SETUP (about 10 minutes)
+INSANE website: SETUP (about 5 minutes). Firebase config is already filled in.
 
-1. Firebase project (config is ALREADY pasted in firebase-config.js, skip to step 2)
-   - Go to console.firebase.google.com > Add project.
-   - Project settings > Your apps > Web (</>) > register app > copy the config.
-   - Paste it into firebase-config.js (replace the PASTE_ values).
+1. Realtime Database (you already have one in your Firebase project)
+   - Firebase console > Build > Realtime Database. If it asks, click Create Database.
+   - Open the Rules tab, delete everything, paste ALL of database.rules.json, click Publish.
 
-2. Database
-   - Build > Firestore Database > Create database (production mode).
-   - Rules tab > paste everything from firestore.rules > Publish.
-
-3. Admin login
+2. Admin login
    - Build > Authentication > Get started > Sign-in method > enable Google.
    - Settings > Authorized domains: add your website domain once it is live.
    - Admin is himanshu.yadav01241@gmail.com. To change it, edit ADMIN_EMAIL in
-     firebase-config.js AND the email in firestore.rules.
+     firebase-config.js AND the email inside database.rules.json (4 places).
 
-4. First run (starter prices, projects and your WhatsApp 919034830336 are added automatically
-   the first time you sign in)
-   OLD STEPS, ONLY IF NEEDED:
-   - Host the folder (see 5). Open yoursite/admin.html and sign in with Google.
-   - Settings tab > set your WhatsApp number (with country code, e.g. 919876543210)
-     > Save, then press "Load starter content".
-   - Prices tab: change plan names, prices and features. Projects tab: your work.
-   - Enquiries tab: every form submission appears here live. Change status, reply on
-     WhatsApp or email, delete, or download as CSV.
+3. First run
+   - Open yoursite/admin.html and sign in with Google.
+   - Starter prices, projects and your WhatsApp number are added automatically.
+   - Prices tab: edit and Save. The website updates instantly, even for people who have it open.
+   - Enquiries tab: every form message appears live. Press "Send test enquiry" to check.
 
-5. Hosting (free)
-   - Netlify: drag this folder onto app.netlify.com/drop.
-   - Or GitHub Pages / Vercel / Firebase Hosting.
-   - Google sign-in does not work when you open admin.html directly from your computer
-     (file://). To test locally run "python -m http.server" in this folder and open
-     http://localhost:8000/admin.html.
+4. Hosting (free)
+   - Netlify: drag this folder onto app.netlify.com/drop. Or GitHub Pages / Vercel.
+   - Google sign-in does not work from file:// . To test locally run "python -m http.server"
+     in this folder and open http://localhost:8000/admin.html
+   - After hosting, change og:image in index.html to your full address, e.g.
+     https://yourdomain.com/og.jpg so link previews show your logo.
 
-Until Firebase is set up, the website still works and shows the starter prices and projects.
-Admin login is only available once Firebase is set up.
+Logo files: logo.png (header/footer), icon.png (favicon), og.jpg (link preview).

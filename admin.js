@@ -1,12 +1,13 @@
-const toast = m => { const t = $("#toast"); t.textContent = m; t.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(() => t.hidden = true, 4000); };
-const errText = e => e && e.code === "permission-denied"
-  ? "Permission denied. Publish firestore.rules in Firebase (Firestore > Rules) and sign in with the admin email."
-  : (e && e.message) || String(e);
-const guard = fn => async () => { try { await fn(); } catch (e) { console.error(e); toast(errText(e)); } };
+const toast = m => { const t = $("#toast"); t.textContent = m; t.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(() => t.hidden = true, 4500); };
+const errText = e => {
+  if (e && e.code === "timeout") return "Cannot reach the database. Publish database.rules.json in Firebase (Realtime Database > Rules) and check your internet.";
+  if (/permission[_ ]denied/i.test((e && (e.code || e.message)) || "")) return "Permission denied. Publish database.rules.json in Firebase (Realtime Database > Rules) and sign in with the admin email.";
+  return (e && e.message) || String(e);
+};
+const guard = fn => async () => { try { await withTimeout(fn(), 10000); } catch (e) { console.error(e); toast(errText(e)); } };
 const F = (label, input) => h("label", { class: "f" }, label, input);
 const inp = (v, a = {}) => { const i = h("input", a); i.value = v ?? ""; return i; };
 const area = (v, rows) => { const t = h("textarea", { rows }); t.value = v ?? ""; return t; };
-const ts = () => firebase.firestore.FieldValue.serverTimestamp();
 let started = false, enq = [], filter = "";
 
 /* Sign in: only ADMIN_EMAIL (verified Google account) gets in */
@@ -30,36 +31,37 @@ $$(".menu button").forEach(b => b.onclick = () => {
 });
 
 async function seed() {
-  const b = fb.db.batch();
-  b.set(fb.db.doc("settings/site"), { ...DEFAULTS.settings, seeded: true }, { merge: true });
-  DEFAULTS.plans.forEach(p => b.set(fb.db.collection("plans").doc(), p));
-  DEFAULTS.projects.forEach(p => b.set(fb.db.collection("projects").doc(), p));
-  await b.commit();
+  const up = { settings: { ...DEFAULTS.settings, seeded: true } };
+  DEFAULTS.plans.forEach(p => up["plans/" + fb.db.ref("plans").push().key] = p);
+  DEFAULTS.projects.forEach(p => up["projects/" + fb.db.ref("projects").push().key] = p);
+  await fb.db.ref().update(up);
 }
 async function start() {
   if (started) return; started = true;
+  fb.db.ref("enquiries").on("value", s => {
+    enq = toList(s.val()).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0)); renderEnq();
+  }, e => toast(errText(e)));
   try {
-    const s = await fb.db.doc("settings/site").get();
-    if (!s.exists) { await seed(); toast("Your starter prices and projects were added. Edit them in the Prices tab."); }
-    else if (/x/i.test(s.data().whatsapp || "x")) await fb.db.doc("settings/site").set({ whatsapp: DEFAULTS.settings.whatsapp }, { merge: true });
+    const s = await withTimeout(fb.db.ref("settings").once("value"));
+    if (!s.exists()) { await seed(); toast("Your starter prices and projects were added. Edit them in the Prices tab."); }
+    else if (/x/i.test(s.val().whatsapp || "x")) await fb.db.ref("settings").update({ whatsapp: DEFAULTS.settings.whatsapp });
   } catch (e) { toast(errText(e)); }
-  fb.db.collection("enquiries").orderBy("createdAt", "desc").onSnapshot(s => { enq = s.docs.map(d => ({ id: d.id, ...d.data() })); renderEnq(); }, e => toast(errText(e)));
   loadList("plans", "#planList", planCard); loadList("projects", "#projList", projCard); loadSettings();
 }
 async function loadList(col, box, maker) {
   try {
-    const s = await fb.db.collection(col).orderBy("order").get();
-    $(box).replaceChildren(...s.docs.map(d => maker({ id: d.id, ...d.data() })));
+    const s = await withTimeout(fb.db.ref(col).once("value"));
+    $(box).replaceChildren(...toList(s.val()).map(maker));
   } catch (e) { toast(errText(e)); }
 }
 
-/* Enquiries */
-const when = e => e.createdAt && e.createdAt.toDate ? e.createdAt.toDate().toLocaleString() : "";
+/* Enquiries (live) */
+const when = e => e.createdAt ? new Date(e.createdAt).toLocaleString() : "";
 const ago = t => {
-  if (!t || !t.toDate) return "just now";
-  const s = (Date.now() - t.toDate()) / 1000;
+  if (!t) return "just now";
+  const s = (Date.now() - t) / 1000;
   if (s < 60) return "just now"; if (s < 3600) return Math.floor(s / 60) + " min ago";
-  if (s < 86400) return Math.floor(s / 3600) + " h ago"; return t.toDate().toLocaleDateString();
+  if (s < 86400) return Math.floor(s / 3600) + " h ago"; return new Date(t).toLocaleDateString();
 };
 function renderEnq() {
   const n = k => enq.filter(e => (e.status || "new") === k).length;
@@ -72,7 +74,7 @@ function renderEnq() {
 }
 function enqCard(e) {
   const c = e.contact || "", digits = c.replace(/\D/g, "");
-  const st = h("select", { class: "st", onchange: guard(() => fb.db.doc("enquiries/" + e.id).update({ status: st.value })) },
+  const st = h("select", { class: "st", onchange: guard(() => fb.db.ref("enquiries/" + e.id + "/status").set(st.value)) },
     ...["new", "contacted", "done"].map(s => h("option", { value: s, selected: s === (e.status || "new") }, s)));
   const wa = "https://wa.me/" + (digits.length === 10 ? "91" + digits : digits) + "?text=" + encodeURIComponent(`Hi ${e.name}, thanks for your website enquiry. How can I help?`);
   return h("article", { class: "card enq " + (e.status || "new") },
@@ -83,11 +85,11 @@ function enqCard(e) {
     h("div", { class: "row" },
       digits.length >= 10 ? h("a", { class: "btn sm", target: "_blank", rel: "noopener", href: wa }, "Reply on WhatsApp") : null,
       c.includes("@") ? h("a", { class: "btn ghost sm", href: "mailto:" + c }, "Email") : null,
-      h("button", { class: "btn ghost sm danger", onclick: guard(async () => { if (confirm("Delete this enquiry?")) await fb.db.doc("enquiries/" + e.id).delete(); }) }, "Delete")));
+      h("button", { class: "btn ghost sm danger", onclick: guard(async () => { if (confirm("Delete this enquiry?")) await fb.db.ref("enquiries/" + e.id).remove(); }) }, "Delete")));
 }
 $("#test").onclick = guard(async () => {
-  await fb.db.collection("enquiries").add({ name: "Test customer", biz: "Test shop", plan: "Business", msg: "This is a test enquiry.", contact: "9876543210", status: "new", createdAt: ts() });
-  toast("Test enquiry sent. It should appear below.");
+  await fb.db.ref("enquiries").push().set({ name: "Test customer", biz: "Test shop", plan: "Business", msg: "This is a test enquiry.", contact: "9876543210", status: "new", createdAt: TS() });
+  toast("Test enquiry sent. It appears below.");
 });
 $("#csv").onclick = () => {
   const q = v => { v = String(v ?? ""); if (/^[=+\-@]/.test(v)) v = "'" + v; return '"' + v.replace(/"/g, '""') + '"'; };
@@ -95,7 +97,11 @@ $("#csv").onclick = () => {
   h("a", { href: URL.createObjectURL(new Blob([rows.map(r => r.map(q).join(",")).join("\n")], { type: "text/csv" })), download: "enquiries.csv" }).click();
 };
 
-/* Prices */
+/* Prices (saved changes go live on the website instantly) */
+async function saveItem(col, p, data) {
+  if (p.id) await fb.db.ref(col + "/" + p.id).set(data);
+  else { const r = fb.db.ref(col).push(); await r.set(data); p.id = r.key; }
+}
 function planCard(p) {
   const n = inp(p.name), pr = inp(p.price), o = inp(p.order ?? 99, { type: "number" }), ft = area((p.features || []).join("\n"), 5);
   const hl = h("input", { type: "checkbox" }); hl.checked = !!p.highlight;
@@ -109,10 +115,9 @@ function planCard(p) {
       h("button", { class: "btn sm", onclick: guard(async () => {
         const d = { name: n.value.trim(), price: pr.value.trim(), order: +o.value || 99, highlight: hl.checked, features: ft.value.split("\n").map(s => s.trim()).filter(Boolean) };
         if (!d.name || !d.price) return toast("Name and price are required");
-        if (p.id) await fb.db.doc("plans/" + p.id).set(d); else p.id = (await fb.db.collection("plans").add(d)).id;
-        toast("Saved. Your website now shows this price.");
+        await saveItem("plans", p, d); toast("Saved. Your website is updated.");
       }) }, "Save"),
-      h("button", { class: "btn ghost sm danger", onclick: guard(async () => { if (!confirm("Delete this plan?")) return; if (p.id) await fb.db.doc("plans/" + p.id).delete(); card.remove(); }) }, "Delete")));
+      h("button", { class: "btn ghost sm danger", onclick: guard(async () => { if (!confirm("Delete this plan?")) return; if (p.id) await fb.db.ref("plans/" + p.id).remove(); card.remove(); }) }, "Delete")));
   return card;
 }
 $("#addPlan").onclick = () => $("#planList").append(planCard({}));
@@ -128,10 +133,9 @@ function projCard(p) {
       h("button", { class: "btn sm", onclick: guard(async () => {
         const v = { title: t.value.trim(), desc: d.value.trim(), colorA: a.value, colorB: b.value, order: +o.value || 99 };
         if (!v.title) return toast("Project name is required");
-        if (p.id) await fb.db.doc("projects/" + p.id).set(v); else p.id = (await fb.db.collection("projects").add(v)).id;
-        toast("Saved");
+        await saveItem("projects", p, v); toast("Saved. Your website is updated.");
       }) }, "Save"),
-      h("button", { class: "btn ghost sm danger", onclick: guard(async () => { if (!confirm("Delete this project?")) return; if (p.id) await fb.db.doc("projects/" + p.id).delete(); card.remove(); }) }, "Delete")));
+      h("button", { class: "btn ghost sm danger", onclick: guard(async () => { if (!confirm("Delete this project?")) return; if (p.id) await fb.db.ref("projects/" + p.id).remove(); card.remove(); }) }, "Delete")));
   return card;
 }
 $("#addProj").onclick = () => $("#projList").append(projCard({}));
@@ -139,13 +143,13 @@ $("#addProj").onclick = () => $("#projList").append(projCard({}));
 /* Settings */
 async function loadSettings() {
   try {
-    const s = await fb.db.doc("settings/site").get(), v = { ...DEFAULTS.settings, ...(s.exists ? s.data() : {}) };
+    const s = await withTimeout(fb.db.ref("settings").once("value")), v = { ...DEFAULTS.settings, ...(s.val() || {}) };
     if (/x/i.test(v.whatsapp || "x")) v.whatsapp = DEFAULTS.settings.whatsapp;
     $("#sName").value = v.name; $("#sWa").value = v.whatsapp; $("#sMail").value = v.email;
   } catch (e) { toast(errText(e)); }
 }
 $("#saveSet").onclick = guard(async () => {
   let wa = $("#sWa").value.replace(/\D/g, ""); if (wa.length === 10) wa = "91" + wa;
-  await fb.db.doc("settings/site").set({ name: $("#sName").value.trim(), whatsapp: wa, email: $("#sMail").value.trim() }, { merge: true });
-  $("#sWa").value = wa; toast("Settings saved");
+  await fb.db.ref("settings").update({ name: $("#sName").value.trim(), whatsapp: wa, email: $("#sMail").value.trim() });
+  $("#sWa").value = wa; toast("Settings saved. Your website is updated.");
 });

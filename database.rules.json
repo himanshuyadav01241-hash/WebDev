@@ -1,0 +1,34 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "settings": {
+      ".read": true,
+      ".write": "auth != null && auth.token.email_verified === true && auth.token.email === 'himanshu.yadav01241@gmail.com'"
+    },
+    "plans": {
+      ".read": true,
+      ".write": "auth != null && auth.token.email_verified === true && auth.token.email === 'himanshu.yadav01241@gmail.com'"
+    },
+    "projects": {
+      ".read": true,
+      ".write": "auth != null && auth.token.email_verified === true && auth.token.email === 'himanshu.yadav01241@gmail.com'"
+    },
+    "enquiries": {
+      ".read": "auth != null && auth.token.email_verified === true && auth.token.email === 'himanshu.yadav01241@gmail.com'",
+      ".write": "auth != null && auth.token.email_verified === true && auth.token.email === 'himanshu.yadav01241@gmail.com'",
+      "$id": {
+        ".write": "!data.exists() && newData.exists()",
+        ".validate": "newData.hasChildren(['name','contact','status','createdAt'])",
+        "name": { ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 100" },
+        "biz": { ".validate": "newData.isString() && newData.val().length <= 150" },
+        "plan": { ".validate": "newData.isString() && newData.val().length <= 60" },
+        "contact": { ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 120" },
+        "msg": { ".validate": "newData.isString() && newData.val().length <= 2000" },
+        "status": { ".validate": "newData.isString() && (newData.val() === 'new' || newData.val() === 'contacted' || newData.val() === 'done')" },
+        "createdAt": { ".validate": "newData.isNumber()" },
+        "$other": { ".validate": false }
+      }
+    }
+  }
+}

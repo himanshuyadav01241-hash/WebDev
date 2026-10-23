@@ -81,3 +81,10 @@ label.f{display:grid;gap:6px;font-weight:700;font-size:.92rem}
   .stats{grid-template-columns:repeat(2,1fr)}
   .tb a{display:none}
 }
+
+.brand{display:flex;align-items:center}
+.logo-img{height:24px;width:auto;display:block}
+.login .box{background:#05070D;color:#fff}
+.login .box p{color:#B8C2D9}
+.login .logo-img{height:30px;margin-bottom:6px}
+.brand small{margin-left:12px;color:#fff}
