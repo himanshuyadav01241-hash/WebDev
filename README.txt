@@ -15,7 +15,9 @@ SETUP (about 10 minutes)
    - Admin is himanshu.yadav01241@gmail.com. To change it, edit ADMIN_EMAIL in
      firebase-config.js AND the email in firestore.rules.
 
-4. First run
+4. First run (starter prices, projects and your WhatsApp 919034830336 are added automatically
+   the first time you sign in)
+   OLD STEPS, ONLY IF NEEDED:
    - Host the folder (see 5). Open yoursite/admin.html and sign in with Google.
    - Settings tab > set your WhatsApp number (with country code, e.g. 919876543210)
      > Save, then press "Load starter content".

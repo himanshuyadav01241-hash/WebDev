@@ -43,7 +43,7 @@
       <div class="sizes" role="group" aria-label="Preview size">
         <button data-w="375">Phone</button><button data-w="768">Tablet</button><button data-w="1200">Desktop</button>
       </div>
-      <label>Width <input id="w" type="range" min="320" max="1100" value="375"><output id="wo">375px</output></label>
+      <label>Width <input id="w" type="range" min="320" max="1200" value="375"><output id="wo">375px</output></label>
     </div>
     <div class="stage">
       <div class="screen" id="screen" aria-hidden="true">
@@ -58,12 +58,14 @@
 <section id="features" class="wrap">
   <div class="head"><h2>What your website will do for you</h2><p>Every site I build includes these, so you can focus on running your business.</p></div>
   <div class="feat">
-    <div><h3>Mobile-first layouts</h3><p>Most visitors arrive on a phone. Every page is designed for small screens first, then expanded for desktop.</p></div>
-    <div><h3>Fast loading</h3><p>Compressed images and lean code keep pages quick, even on slow connections.</p></div>
-    <div><h3>Found on Google</h3><p>Clear page titles, descriptions and structure help search engines show your business to local customers.</p></div>
-    <div><h3>Call and WhatsApp buttons</h3><p>Customers reach you in one tap from any page.</p></div>
-    <div><h3>Admin dashboard</h3><p>Optional. Update prices, photos and listings yourself, without waiting on a developer.</p></div>
-    <div><h3>Your domain, with HTTPS</h3><p>Launch on your own web address with a free security certificate and reliable hosting.</p></div>
+    <article class="fi"><span class="ic"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/></svg></span><div><h3>Mobile-first layouts</h3><p>Built for phones first, then expanded for desktop.</p></div></article>
+    <article class="fi"><span class="ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg></span><div><h3>Fast loading</h3><p>Compressed images and lean code, even on slow data.</p></div></article>
+    <article class="fi"><span class="ic"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg></span><div><h3>Found on Google</h3><p>Clean titles and structure so local customers find you.</p></div></article>
+    <article class="fi"><span class="ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"/></svg></span><div><h3>Call and WhatsApp buttons</h3><p>Customers reach you in one tap from any page.</p></div></article>
+    <article class="fi"><span class="ic"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="8" height="8" rx="1"/><rect x="13" y="3" width="8" height="5" rx="1"/><rect x="13" y="11" width="8" height="10" rx="1"/><rect x="3" y="14" width="8" height="7" rx="1"/></svg></span><div><h3>Admin dashboard</h3><p>Change prices, photos and listings yourself.</p></div></article>
+    <article class="fi"><span class="ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 13l3-8h12l3 8v6H3z"/><path d="M3 13h5l1 3h6l1-3h5"/></svg></span><div><h3>Enquiries in one inbox</h3><p>Every form message is saved, with a reply button.</p></div></article>
+    <article class="fi"><span class="ic"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/></svg></span><div><h3>Your domain with HTTPS</h3><p>Your own web address with a free security certificate.</p></div></article>
+    <article class="fi"><span class="ic"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 015 .5c0 1.5-2.5 2-2.5 3.5M12 17h.01"/></svg></span><div><h3>Support after launch</h3><p>Fixes and help whenever you need them.</p></div></article>
   </div>
 </section>
 
@@ -89,6 +91,16 @@
   </div>
 </section>
 
+<section id="faq" class="wrap">
+  <div class="head"><h2>Common questions</h2></div>
+  <div class="faq">
+    <details><summary>How long does a website take?</summary><p>Starter sites take 5 to 7 days. Larger sites take longer, and I confirm the timeline before I start.</p></details>
+    <details><summary>Will it work on mobile?</summary><p>Yes. Every site is tested on phone, tablet and desktop.</p></details>
+    <details><summary>Can I update the website myself?</summary><p>Yes. The Business plan includes an admin dashboard where you change prices, photos and listings.</p></details>
+    <details><summary>What about the domain and hosting?</summary><p>A domain and hosting are separate yearly costs. I set both up for you in the Business plan.</p></details>
+  </div>
+</section>
+
 <section id="contact" class="wrap">
   <div class="contact">
     <div>
@@ -110,6 +122,7 @@
 </main>
 
 <footer><div class="wrap foot"><span>&copy; <span id="year"></span> Himanshu. All rights reserved.</span><span><a href="admin.html">Admin</a> &nbsp; <a href="#top">Back to top</a></span></div></footer>
+<a class="wa-float" data-wa target="_blank" rel="noopener" aria-label="Chat on WhatsApp"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z" fill="none" stroke="#fff" stroke-width="2" stroke-linejoin="round"/></svg></a>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="firebase-config.js"></script>

@@ -7,22 +7,27 @@ mb.onclick = () => mb.setAttribute("aria-expanded", nav.classList.toggle("open")
 nav.addEventListener("click", e => { if (e.target.tagName === "A") { nav.classList.remove("open"); mb.setAttribute("aria-expanded", "false"); } });
 $("#year").textContent = new Date().getFullYear();
 
-/* Responsive preview */
+/* Responsive preview: real width, scaled to fit any screen */
 const r = $("#w"), o = $("#wo"), sc = $("#screen"), stage = $(".stage");
 let timer;
-const maxW = () => Math.max(320, Math.min(1100, stage.clientWidth - 40));
+function fit() {
+  const s = Math.min(1, (stage.clientWidth - 32) / +r.value);
+  sc.style.setProperty("--s", s);
+  stage.style.height = (sc.offsetHeight * s + 40) + "px";
+}
 function setW(v, user) {
   if (user) clearInterval(timer);
-  v = Math.min(v, maxW());
-  r.value = v; sc.style.setProperty("--w", v + "px"); o.textContent = v + "px";
+  v = Math.max(320, Math.min(1200, v));
+  r.value = v; sc.style.setProperty("--w", v + "px"); o.textContent = v + "px"; fit();
 }
 r.oninput = () => setW(+r.value, true);
 $$(".sizes button").forEach(b => b.onclick = () => setW(+b.dataset.w, true));
-addEventListener("resize", () => { r.max = maxW(); setW(+r.value); });
-r.max = maxW(); setW(375);
+addEventListener("resize", fit);
+if (window.ResizeObserver) new ResizeObserver(fit).observe(sc);
+setW(375);
 if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {
   setTimeout(() => {
-    let v = 375; const end = maxW();
+    let v = 375; const end = innerWidth < 700 ? 768 : 1100;
     timer = setInterval(() => { v += 8; if (v >= end) { v = end; clearInterval(timer); } setW(v); }, 16);
   }, 700);
 }
@@ -46,6 +51,7 @@ function renderProjects(list) {
     h("div", { class: "shot", style: `--a:${safeColor(p.colorA, "#FFD27A")};--b:${safeColor(p.colorB, "#FF9F6B")}` }),
     h("h3", {}, p.title), h("p", {}, p.desc))));
 }
+applyCfg();
 (async function load() {
   let plans = DEFAULTS.plans, projects = DEFAULTS.projects;
   if (fb) {
@@ -55,6 +61,7 @@ function renderProjects(list) {
         fb.db.collection("plans").orderBy("order").get(),
         fb.db.collection("projects").orderBy("order").get()]);
       if (s.exists) Object.assign(CFG, s.data());
+      if (/x/i.test(CFG.whatsapp || "x")) CFG.whatsapp = DEFAULTS.settings.whatsapp;
       if (!p.empty) plans = p.docs.map(d => d.data());
       if (!j.empty) projects = j.docs.map(d => d.data());
     } catch (e) { console.warn(e); }
@@ -76,6 +83,7 @@ $("#quote").onsubmit = async e => {
     msg.replaceChildren("Thanks, your enquiry is sent. I will contact you soon. ", wa);
     e.target.reset();
   } catch (err) {
+    console.error("Enquiry not saved:", err);
     msg.replaceChildren("Your enquiry could not be saved online. Please send it here instead: ", wa);
   }
   btn.disabled = false;

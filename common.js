@@ -1,6 +1,6 @@
 /* Shared code: starter content, Firebase start-up, small DOM helper */
 const DEFAULTS = {
-  settings: { name: "Himanshu", whatsapp: "91XXXXXXXXXX", email: ADMIN_EMAIL },
+  settings: { name: "Himanshu", whatsapp: "919034830336", email: ADMIN_EMAIL },
   plans: [
     { name: "Starter", price: "₹7,999", order: 1, highlight: false, features: ["1 to 3 pages", "Works on phone, tablet and desktop", "Contact form and WhatsApp button", "Delivered in 5 to 7 days"] },
     { name: "Business", price: "₹19,999", order: 2, highlight: true, features: ["Up to 8 pages", "Admin dashboard to edit content", "Basic Google search setup", "Domain and hosting setup", "30 days of support"] },

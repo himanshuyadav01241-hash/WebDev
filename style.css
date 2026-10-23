@@ -51,11 +51,6 @@ output{min-width:6ch;font-variant-numeric:tabular-nums}
 @container (min-width:560px){.mini-links{display:flex}.burger{display:none}.tiles{grid-template-columns:repeat(3,1fr)}.mini-hero{padding:56px 32px}.mini-hero h2{font-size:2.6rem}}
 .head{margin-bottom:36px}
 .head p{color:var(--mute);margin-top:12px}
-.feat{display:grid;gap:32px 40px}
-.feat div{border-top:3px solid var(--ink);padding-top:16px}
-.feat p{color:var(--mute);margin-top:8px}
-@media(min-width:700px){.feat{grid-template-columns:1fr 1fr}}
-@media(min-width:1000px){.feat{grid-template-columns:repeat(3,1fr)}}
 .work{display:grid;gap:28px}
 @media(min-width:800px){.work{grid-template-columns:repeat(3,1fr)}}
 .shot{aspect-ratio:16/11;border-radius:14px;background:linear-gradient(135deg,var(--a),var(--b));position:relative;overflow:hidden;border:2px solid var(--ink)}
@@ -89,3 +84,37 @@ footer{border-top:1px solid var(--line);padding:24px 0;color:var(--mute);font-si
 .foot{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
 #formMsg{color:var(--mute);font-size:.95rem}#formMsg a{color:var(--blue);font-weight:700}
+
+/* Responsive preview: real width + scale, works on every screen */
+.stage{display:block;position:relative;overflow:hidden;padding:0;min-height:0;height:460px}
+.screen{position:absolute;top:20px;left:50%;max-width:none;align-self:auto;transform:translateX(-50%) scale(var(--s,1));transform-origin:top center}
+/* Features */
+.feat{display:grid;gap:12px}
+.fi{display:flex;gap:14px;background:#fff;border:2px solid var(--line);border-radius:14px;padding:16px}
+.ic{flex:none;width:44px;height:44px;border-radius:12px;background:#E8EEFF;color:var(--blue);display:grid;place-items:center}
+.ic svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.fi h3{font-size:1.05rem}
+.fi p{font-size:.95rem;color:var(--mute);margin-top:4px}
+@media(min-width:700px){.feat{grid-template-columns:1fr 1fr;gap:16px}}
+@media(min-width:1000px){.feat{grid-template-columns:repeat(4,1fr)}.fi{flex-direction:column;padding:20px}}
+/* FAQ */
+.faq{max-width:760px}
+details{background:#fff;border:2px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:10px}
+summary{font-weight:700;cursor:pointer;list-style:none;display:flex;justify-content:space-between;gap:12px}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";font-weight:800;color:var(--blue)}
+details[open] summary::after{content:"\2212"}
+details p{margin-top:10px;color:var(--mute)}
+/* Floating WhatsApp */
+.wa-float{position:fixed;right:16px;bottom:16px;width:56px;height:56px;border-radius:50%;background:#25D366;display:grid;place-items:center;box-shadow:0 6px 18px rgba(0,0,0,.25);z-index:9}
+.wa-float svg{width:28px;height:28px}
+/* Phone sizing */
+@media(max-width:600px){
+ section{padding:48px 0}.hero{padding-top:36px}.head{margin-bottom:22px}
+ .lead{font-size:1.05rem}
+ #features h2{font-size:1.55rem}#features .head p{font-size:.9rem}
+ .fi{padding:12px;gap:12px;border-width:1px}.ic{width:38px;height:38px;border-radius:10px}.ic svg{width:19px;height:19px}
+ .fi h3{font-size:.95rem}.fi p{font-size:.84rem;line-height:1.45;margin-top:2px}
+ .demo{margin-top:32px}.demo-bar{padding:10px 12px}
+ .plan{padding:22px}form{padding:18px}
+}
