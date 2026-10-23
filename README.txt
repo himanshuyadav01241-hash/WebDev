@@ -1,6 +1,6 @@
 SETUP (about 10 minutes)
 
-1. Firebase project
+1. Firebase project (config is ALREADY pasted in firebase-config.js, skip to step 2)
    - Go to console.firebase.google.com > Add project.
    - Project settings > Your apps > Web (</>) > register app > copy the config.
    - Paste it into firebase-config.js (replace the PASTE_ values).
