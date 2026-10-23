@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Admin | Himanshu.dev</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="admin.css">
+</head>
+<body>
+<div class="adm">
+  <div class="top"><h1>Admin panel</h1><div id="who" class="row" hidden><button class="btn ghost sm" id="out">Sign out</button> <a class="btn ghost sm" href="index.html">View site</a></div></div>
+
+  <section id="login" class="card" hidden>
+    <h2>Sign in</h2>
+    <p>Use the Google account set as ADMIN_EMAIL in firebase-config.js.</p>
+    <p class="row"><button class="btn" id="gbtn">Sign in with Google</button></p>
+    <p id="loginMsg" role="status"></p>
+  </section>
+
+  <div id="app" hidden>
+    <div class="tabs" role="tablist">
+      <button data-t="p-enq" aria-selected="true">Enquiries (<span id="newCount">0</span> new)</button>
+      <button data-t="p-plans" aria-selected="false">Prices</button>
+      <button data-t="p-proj" aria-selected="false">Projects</button>
+      <button data-t="p-set" aria-selected="false">Settings</button>
+    </div>
+
+    <div id="p-enq" class="panel">
+      <div class="row between">
+        <label class="f inline">Show <select id="fstat"><option value="">All</option><option>new</option><option>contacted</option><option>done</option></select></label>
+        <button class="btn ghost sm" id="csv">Download CSV</button>
+      </div>
+      <div id="enqList"></div>
+    </div>
+
+    <div id="p-plans" class="panel" hidden>
+      <p class="hint">Prices appear on your website exactly as typed, for example ₹7,999 or "Let's talk".</p>
+      <div id="planList"></div>
+      <button class="btn sm" id="addPlan">Add plan</button>
+    </div>
+
+    <div id="p-proj" class="panel" hidden>
+      <div id="projList"></div>
+      <button class="btn sm" id="addProj">Add project</button>
+    </div>
+
+    <div id="p-set" class="panel" hidden>
+      <div class="card">
+        <div class="grid2">
+          <label class="f">Your name<input id="sName"></label>
+          <label class="f">WhatsApp number with country code<input id="sWa" placeholder="919876543210"></label>
+          <label class="f">Contact email<input id="sMail" type="email"></label>
+        </div>
+        <div class="row"><button class="btn sm" id="saveSet">Save settings</button></div>
+      </div>
+      <div class="card">
+        <h3>First time?</h3>
+        <p>Add the starter prices, projects and settings to your database, then edit them in the other tabs.</p>
+        <div class="row"><button class="btn ghost sm" id="seed">Load starter content</button></div>
+      </div>
+    </div>
+  </div>
+  <p id="toast" role="status" hidden></p>
+</div>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script src="common.js"></script>
+<script src="admin.js"></script>
+</body>
+</html>

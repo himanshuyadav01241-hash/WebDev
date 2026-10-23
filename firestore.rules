@@ -1,0 +1,30 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Only your verified Google account is admin. Change the email here if you change ADMIN_EMAIL.
+    function isAdmin() {
+      return request.auth != null
+        && request.auth.token.email_verified == true
+        && request.auth.token.email == 'himanshu.yadav01241@gmail.com';
+    }
+
+    // Everyone can read what the website shows; only admin can change it.
+    match /settings/{id} { allow read: if true; allow write: if isAdmin(); }
+    match /plans/{id}    { allow read: if true; allow write: if isAdmin(); }
+    match /projects/{id} { allow read: if true; allow write: if isAdmin(); }
+
+    // Visitors can only add a valid enquiry. Only admin can read, update or delete.
+    match /enquiries/{id} {
+      allow create: if request.resource.data.keys().hasOnly(['name','biz','plan','msg','contact','status','createdAt'])
+        && request.resource.data.name is string    && request.resource.data.name.size() > 0    && request.resource.data.name.size() <= 100
+        && request.resource.data.biz is string     && request.resource.data.biz.size() <= 150
+        && request.resource.data.plan is string    && request.resource.data.plan.size() <= 60
+        && request.resource.data.contact is string && request.resource.data.contact.size() > 0 && request.resource.data.contact.size() <= 120
+        && request.resource.data.msg is string     && request.resource.data.msg.size() <= 2000
+        && request.resource.data.status == 'new'
+        && request.resource.data.createdAt == request.time;
+      allow read, update, delete: if isAdmin();
+    }
+  }
+}
